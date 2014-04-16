@@ -1,0 +1,51 @@
+core-drawer-panel {
+  background-color: #eee;
+}
+
+[drawer] {
+  background-color: #fff;
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
+}
+
+[main] {
+  height: 100%;
+}
+
+core-toolbar {
+  background-color: #4F7DC9;
+  background-color: #526E9C;
+  color: #fff;
+}
+
+[main] core-toolbar {
+  background-color: #526E9C;
+  background-color: #4F7DC9;
+}
+
+.card {
+  display: block;
+  margin: 128px 100px 60px;
+  box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
+}
+
+.card > ::content > * {
+  display: none;
+  background-color: #fff;
+}
+
+.card > ::content > .core-selected {
+  display: block;
+}
+
+core-drawer-panel[narrow] [main] {
+  background-color: #fff;
+}
+
+core-drawer-panel[narrow] .card {
+  margin: 0;
+  box-shadow: none;
+}
+
+core-drawer-panel:not([narrow]) #menuButton {
+  display: none;
+}
