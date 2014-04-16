@@ -74,9 +74,10 @@ sampler-scaffold
     
     updateMenu: function() {
       this.sampleNames = [];
-      this.$.samples.getDistributedNodes().array().forEach(function(sample) {
-        this.sampleNames.push(sample.getAttribute('label'));
-      }.bind(this));
+      Array.prototype.forEach.call(this.$.samples.getDistributedNodes(), 
+        function(sample) {
+          this.sampleNames.push(sample.getAttribute('label'));
+        }.bind(this));
     },
     
     togglePanel: function() {
