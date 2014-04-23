@@ -68,6 +68,10 @@ sampler-scaffold
     
     responsiveWidth: '800px',
     
+    ready: function() {
+      window.addEventListener('resize', this.sampleChanged.bind(this));
+    },
+    
     attached: function() {
       this.updateMenu();
     },
