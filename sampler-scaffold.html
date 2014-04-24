@@ -28,28 +28,28 @@ sampler-scaffold
 
   <core-drawer-panel id="drawerPanel" narrow="{{narrow}}" responsiveWidth="{{responsiveWidth}}">
 
-    <core-header-panel drawer mode="waterfall-tall">
+    <core-header-panel drawer mode="waterfall">
 
-      <core-toolbar>
+      <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
         <div>{{label}}</div>
       </core-toolbar>
       
       <core-menu selected="{{selected}}" selectedModel="{{sampleName}}" on-core-activate="{{togglePanel}}">
         <template repeat="{{sampleNames}}">
-          <core-item src="code.png" label="{{}}"></core-item>
+          <core-item src="code.png" label="{{name}}"></core-item>
         </template>
       </core-menu>
 
     </core-header-panel>
     
-    <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall-tall' : 'cover'}}">
+    <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall' : 'cover'}}">
 
-      <core-toolbar class="tall">
+      <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
-        <div>{{sampleName}}</div>
+        <div class="toolbar-label">{{sampleName.tag ? '&lt;' + sampleName.tag + '&gt;' : sampleName.name}}</div>
       </core-toolbar>
       
-      <core-selector class="card" selected="{{selected}}" selectedItem="{{sample}}">
+      <core-selector id="card" selected="{{selected}}" selectedItem="{{sample}}" on-transitionend="{{cardTransitingDone}}">
 
         <content id="samples" select="*"></content>
         
@@ -64,20 +64,50 @@ sampler-scaffold
 
   Polymer('sampler-scaffold', {
     
-    selected: 0,
-    
     responsiveWidth: '800px',
     
     attached: function() {
       this.updateMenu();
+      this.async(function() {
+        this.selected = 0;
+      }, null, 300);
     },
     
     updateMenu: function() {
       this.sampleNames = [];
       Array.prototype.forEach.call(this.$.samples.getDistributedNodes(), 
         function(sample) {
-          this.sampleNames.push(sample.getAttribute('label'));
+          this.sampleNames.push({
+            name: sample.getAttribute('label'),
+            tag: sample.getAttribute('tag')
+          });
         }.bind(this));
+    },
+    
+    selectedChanged: function() {
+      if (this.narrow) {
+        return;
+      }
+      this.$.card.classList.remove('transiting');
+      this.$.card.style.display = 'none';
+      this.async(function() {
+        this.$.card.style.display = 'block';
+        this.moveCard(this.$.mainHeaderPanel.offsetHeight);
+        this.async(function() {
+          this.$.card.classList.add('transiting');
+          this.moveCard(null);
+        }, null, 100);
+      });
+    },
+    
+    moveCard: function(y) {
+      var s = this.$.card.style;
+      s.webkitTransform = s.transform = 
+          y ? 'translate3d(0, ' + y + 'px,0)' : null;
+    },
+    
+    cardTransitingDone: function() {
+      this.$.card.classList.remove('transiting');
     },
     
     togglePanel: function() {

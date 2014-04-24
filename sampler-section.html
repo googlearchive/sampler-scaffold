@@ -69,7 +69,6 @@ sampler-section
     
     frameLoaded: function() {
       this.loaded = true;
-      this.updateFrameHeight();
       this.frame.contentWindow.addEventListener('polymer-ready', function() {
         setTimeout(this.updateFrameHeight.bind(this), 100);
       }.bind(this));

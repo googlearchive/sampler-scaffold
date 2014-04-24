@@ -8,7 +8,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 #drawerPanel {
-  background-color: #eee;
+  background-color: #fafafa;
 }
 
 [drawer] {
@@ -31,20 +31,25 @@ core-toolbar {
   background-color: #4F7DC9;
 }
 
-.card {
+#card {
   display: block;
   margin: 128px 60px 60px 100px;
   box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
 }
 
-/*@polyfill .card > * */
-.card > ::content > * {
+#card.transiting {
+  transition: 0.38s -webkit-transform ease-out;
+  transition: 0.38s transform ease-out;
+}
+
+/*@polyfill #card > * */
+#card > ::content > * {
   display: none;
   background-color: #fff;
 }
 
-/*@polyfill .card > .core-selected */
-.card > ::content > .core-selected {
+/*@polyfill #card > .core-selected */
+#card > ::content > .core-selected {
   display: block;
 }
 
@@ -52,11 +57,15 @@ core-toolbar {
   background-color: #fff;
 }
 
-#drawerPanel[narrow] .card {
+#drawerPanel[narrow] #card {
   margin: 0;
   box-shadow: none;
 }
 
 #drawerPanel:not([narrow]) #menuButton {
   display: none;
+}
+
+.toolbar-label {
+  letter-spacing: 0.05em;
 }
