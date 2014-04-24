@@ -68,10 +68,6 @@ sampler-scaffold
     
     responsiveWidth: '800px',
     
-    ready: function() {
-      window.addEventListener('resize', this.sampleChanged.bind(this));
-    },
-    
     attached: function() {
       this.updateMenu();
     },
@@ -86,30 +82,8 @@ sampler-scaffold
     
     togglePanel: function() {
       this.$.drawerPanel.togglePanel();
-    },
-    
-    sampleChanged: function() {
-      if (this.sample) {
-        var frame = this.sample.querySelector('iframe');
-        if (frame) {
-          frame.contentWindow.addEventListener('polymer-ready', function() {
-            this.updateFrameHeight(frame);
-          }.bind(this));
-          this.updateFrameHeight(frame);
-        }
-      }
-    },
-    
-    updateFrameHeight: function(frame) {
-      if (frame && frame.contentDocument && frame.contentDocument.body) {
-        var body = frame.contentDocument.body;
-        frame.style.height = body.scrollHeight + 'px';
-        // to avoid the 'blinking bug'
-        // https://code.google.com/p/chromium/issues/detail?id=332024
-        body.style.webkitTransform = body.style.transform = 'translateZ(0)';
-      }
     }
-  
+    
   });
 
 </script>

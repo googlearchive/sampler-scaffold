@@ -33,7 +33,7 @@ core-toolbar {
 
 .card {
   display: block;
-  margin: 128px 100px 60px;
+  margin: 128px 60px 60px 100px;
   box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
 }
 
