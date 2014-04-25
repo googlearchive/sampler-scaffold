@@ -33,11 +33,11 @@ core-toolbar {
 
 #card {
   display: block;
-  margin: 128px 60px 60px 100px;
+  margin: 128px 100px 60px;
   box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
 }
 
-#card.transiting {
+#card.transition {
   transition: 0.38s -webkit-transform ease-out;
   transition: 0.38s transform ease-out;
 }
@@ -63,6 +63,14 @@ core-toolbar {
 }
 
 #drawerPanel:not([narrow]) #menuButton {
+  display: none;
+}
+
+.action-button {
+  z-index: 1;
+}
+
+.action-button[hidden] {
   display: none;
 }
 

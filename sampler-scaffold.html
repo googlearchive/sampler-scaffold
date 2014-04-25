@@ -21,7 +21,7 @@ sampler-scaffold
 <link rel="import" href="../core-item/core-item.html">
 <link rel="import" href="../core-menu/core-menu.html">
 
-<polymer-element name="sampler-scaffold" attributes="label responsiveWidth">
+<polymer-element name="sampler-scaffold" attributes="label responsiveWidth sample hideAction">
 <template>
 
   <link rel="stylesheet" href="sampler-scaffold.css">
@@ -34,8 +34,8 @@ sampler-scaffold
         <div>{{label}}</div>
       </core-toolbar>
       
-      <core-menu selected="{{selected}}" selectedModel="{{sampleName}}" on-core-activate="{{togglePanel}}">
-        <template repeat="{{sampleNames}}">
+      <core-menu selected="{{selected}}" selectedModel="{{item}}" on-core-activate="{{togglePanel}}">
+        <template repeat="{{items}}">
           <core-item src="code.png" label="{{name}}"></core-item>
         </template>
       </core-menu>
@@ -46,15 +46,16 @@ sampler-scaffold
 
       <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
-        <div class="toolbar-label">{{sampleName.tag ? '&lt;' + sampleName.tag + '&gt;' : sampleName.name}}</div>
+        <div core-flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.name}}</div>
+        <core-icon-button class="action-button" hidden?="{{hideAction}}" icon="shortcut" theme="core-dark-theme" on-click="{{viewSourceAction}}"></core-icon-button>
       </core-toolbar>
       
-      <core-selector id="card" selected="{{selected}}" selectedItem="{{sample}}" on-transitionend="{{cardTransitingDone}}">
+      <core-selector id="card" selected="{{selected}}" selectedItem="{{sample}}" on-transitionend="{{cardTransitionDone}}">
 
         <content id="samples" select="*"></content>
         
       </core-selector>
-
+      
     </core-header-panel>
 
   </core-drawer-panel>
@@ -66,6 +67,8 @@ sampler-scaffold
     
     responsiveWidth: '800px',
     
+    hideAction: false,
+    
     attached: function() {
       this.updateMenu();
       this.async(function() {
@@ -74,27 +77,29 @@ sampler-scaffold
     },
     
     updateMenu: function() {
-      this.sampleNames = [];
-      Array.prototype.forEach.call(this.$.samples.getDistributedNodes(), 
-        function(sample) {
-          this.sampleNames.push({
-            name: sample.getAttribute('label'),
-            tag: sample.getAttribute('tag')
-          });
-        }.bind(this));
+      this.items = [];
+      this.$.card.items.forEach(function(s) {
+        this.items.push({
+          name: s.getAttribute('label'),
+          tag: s.getAttribute('tag')
+        });
+      }.bind(this));
     },
     
     selectedChanged: function() {
-      if (this.narrow) {
-        return;
+      if (!this.narrow) {
+        this.animateCard();
       }
-      this.$.card.classList.remove('transiting');
+    },
+    
+    animateCard: function() {
+      this.$.card.classList.remove('transition');
       this.$.card.style.display = 'none';
       this.async(function() {
         this.$.card.style.display = 'block';
         this.moveCard(this.$.mainHeaderPanel.offsetHeight);
         this.async(function() {
-          this.$.card.classList.add('transiting');
+          this.$.card.classList.add('transition');
           this.moveCard(null);
         }, null, 100);
       });
@@ -106,12 +111,19 @@ sampler-scaffold
           y ? 'translate3d(0, ' + y + 'px,0)' : null;
     },
     
-    cardTransitingDone: function() {
-      this.$.card.classList.remove('transiting');
+    cardTransitionDone: function() {
+      this.$.card.classList.remove('transition');
     },
     
     togglePanel: function() {
       this.$.drawerPanel.togglePanel();
+    },
+    
+    viewSourceAction: function() {
+      var frame = this.sample && this.sample.frame;
+      if (frame) {
+        window.open('view-source:' + frame.src, this.sample.tag);
+      }
     }
     
   });
