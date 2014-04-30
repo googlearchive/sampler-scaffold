@@ -21,12 +21,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 core-toolbar {
-  background-color: #526E9C;
+  background-color: #4F7DC9;
   color: #fff;
 }
 
 [main] core-toolbar {
-  background-color: #4F7DC9;
+  background-color: #526E9C;
 }
 
 #card {
