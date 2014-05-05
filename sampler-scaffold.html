@@ -14,12 +14,14 @@ sampler-scaffold
 @homepage github.io
 -->
 
+<link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../core-toolbar/core-toolbar.html">
 <link rel="import" href="../core-drawer-panel/core-drawer-panel.html">
 <link rel="import" href="../core-header-panel/core-header-panel.html">
 <link rel="import" href="../core-icon-button/core-icon-button.html">
 <link rel="import" href="../core-item/core-item.html">
 <link rel="import" href="../core-menu/core-menu.html">
+<link rel="import" href="../core-menu/core-submenu.html">
 
 <polymer-element name="sampler-scaffold" attributes="label responsiveWidth sample hideAction">
 <template>
@@ -34,9 +36,13 @@ sampler-scaffold
         <div>{{label}}</div>
       </core-toolbar>
       
-      <core-menu selected="{{selected}}" selectedModel="{{item}}" on-core-activate="{{togglePanel}}">
+      <core-menu id="menu" on-core-activate="{{togglePanel}}" on-core-select="{{menuSelect}}">
         <template repeat="{{items}}">
-          <core-item src="code.png" label="{{name}}"></core-item>
+          <core-submenu src="code.png" name="{{name}}" label="{{label || name}}" on-core-activate="{{togglePanel}}">
+            <template repeat="{{items}}">
+              <core-item src="code.png" name="{{name}}" label="{{label || name}}"></core-item>
+            </template>
+          </core-submenu>
         </template>
       </core-menu>
 
@@ -47,10 +53,10 @@ sampler-scaffold
       <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
         <div core-flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.name}}</div>
-        <core-icon-button class="action-button" hidden?="{{hideAction}}" icon="shortcut" theme="core-dark-theme" on-click="{{viewSourceAction}}"></core-icon-button>
+        <core-icon-button class="action-button" hidden?="{{hideAction}}" icon="launch" theme="core-dark-theme" on-click="{{viewSourceAction}}"></core-icon-button>
       </core-toolbar>
       
-      <core-selector id="card" selected="{{selected}}" selectedItem="{{sample}}" on-transitionend="{{cardTransitionDone}}">
+      <core-selector id="card" selected="{{selected}}" valueattr="label" selectedItem="{{sample}}" on-transitionend="{{cardTransitionDone}}">
 
         <content id="samples" select="*"></content>
         
@@ -65,25 +71,55 @@ sampler-scaffold
 
   Polymer('sampler-scaffold', {
     
-    responsiveWidth: '800px',
+    responsiveWidth: '860px',
     
     hideAction: false,
     
     attached: function() {
       this.updateMenu();
       this.async(function() {
-        this.selected = 0;
+        this.$.menu.selected = 0;
       }, null, 300);
     },
     
     updateMenu: function() {
       this.items = [];
       this.$.card.items.forEach(function(s) {
-        this.items.push({
+        var newItem = {
           name: s.getAttribute('label'),
           tag: s.getAttribute('tag')
-        });
+        };
+        var foundItem;
+        for (var i = 0, item; item = this.items[i]; i++) {
+          if (item.tag === newItem.tag) {
+            foundItem = item;
+            break;
+          }
+        }
+        if (foundItem && foundItem.tag) {
+          var l = foundItem.items
+          if (!l) {
+            l = foundItem.items = [];
+            foundItem.label = foundItem.name.split('/').shift();
+            l.push({
+              name: foundItem.name,
+              label: foundItem.name.split('/').pop(),
+              tag: foundItem.tag
+            });
+          }
+          newItem.label = newItem.name.split('/').pop();
+          l.push(newItem);
+        } else {
+          this.items.push(newItem);
+        }
       }.bind(this));
+    },
+    
+    menuSelect: function(e, detail) {
+      if (detail.isSelected) {
+        this.item = detail.item.templateInstance.model;
+        this.selected = this.item.name;
+      }
     },
     
     selectedChanged: function() {

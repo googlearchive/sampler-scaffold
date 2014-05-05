@@ -20,15 +20,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   height: 100%;
 }
 
-core-toolbar {
+[drawer] core-toolbar {
   background-color: #4F7DC9;
   color: #fff;
 }
 
 [main] core-toolbar {
   background-color: #526E9C;
+  color: #fff;
 }
 
+/* adjust drawerPanel drawer's width instead of using the default from core-drawer-panel */
+#drawerPanel::shadow #drawer {
+  width: 260px;
+}
+
+#drawerPanel::shadow #main {
+  left: 260px;
+}
+
+/* card */
 #card {
   display: block;
   margin: 128px 100px 60px;
@@ -36,10 +47,11 @@ core-toolbar {
 }
 
 #card.transition {
-  transition: 0.38s -webkit-transform ease-out;
-  transition: 0.38s transform ease-out;
+  transition: -webkit-transform 0.38s ease-out;
+  transition: transform 0.38s ease-out;
 }
 
+/* card's content which contains all the demos */
 /*@polyfill #card > * */
 #card > ::content > * {
   display: none;
