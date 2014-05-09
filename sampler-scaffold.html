@@ -129,13 +129,13 @@ sampler-scaffold
     },
     
     animateCard: function() {
-      this.$.card.classList.remove('transition');
+      this.$.card.classList.remove('move-up');
       this.$.card.style.display = 'none';
       this.async(function() {
         this.$.card.style.display = 'block';
         this.moveCard(this.$.mainHeaderPanel.offsetHeight);
         this.async(function() {
-          this.$.card.classList.add('transition');
+          this.$.card.classList.add('move-up');
           this.moveCard(null);
         }, null, 100);
       });
@@ -148,9 +148,11 @@ sampler-scaffold
     },
     
     cardTransitionDone: function() {
-      this.$.card.classList.remove('transition');
-      if (this.sample) {
-        this.sample.updateFrameHeight();
+      if (this.$.card.classList.contains('move-up')) {
+        this.$.card.classList.remove('move-up');
+        if (this.sample && this.sample.updateFrameHeight) {
+          this.sample.updateFrameHeight();
+        }
       }
     },
     
