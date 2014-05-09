@@ -149,6 +149,9 @@ sampler-scaffold
     
     cardTransitionDone: function() {
       this.$.card.classList.remove('transition');
+      if (this.sample) {
+        this.sample.updateFrameHeight();
+      }
     },
     
     togglePanel: function() {
