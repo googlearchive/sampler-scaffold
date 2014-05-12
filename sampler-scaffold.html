@@ -23,7 +23,7 @@ sampler-scaffold
 <link rel="import" href="../core-menu/core-menu.html">
 <link rel="import" href="../core-menu/core-submenu.html">
 
-<polymer-element name="sampler-scaffold" attributes="label responsiveWidth sample hideAction">
+<polymer-element name="sampler-scaffold" attributes="label responsiveWidth">
 <template>
 
   <link rel="stylesheet" href="sampler-scaffold.css">
@@ -36,14 +36,8 @@ sampler-scaffold
         <div>{{label}}</div>
       </core-toolbar>
       
-      <core-menu id="menu" on-core-activate="{{togglePanel}}" on-core-select="{{menuSelect}}">
-        <template repeat="{{items}}">
-          <core-submenu src="code.png" name="{{name}}" label="{{label || name}}" on-core-activate="{{togglePanel}}">
-            <template repeat="{{items}}">
-              <core-item src="code.png" name="{{name}}" label="{{label || name}}"></core-item>
-            </template>
-          </core-submenu>
-        </template>
+      <core-menu id="menu" on-core-select="{{menuSelect}}">
+        <content></content>
       </core-menu>
 
     </core-header-panel>
@@ -51,16 +45,20 @@ sampler-scaffold
     <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall' : 'cover'}}">
 
       <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
+      
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
-        <div core-flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.name}}</div>
-        <core-icon-button class="action-button" hidden?="{{hideAction}}" icon="launch" theme="core-dark-theme" on-click="{{viewSourceAction}}"></core-icon-button>
+        <div core-flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.label}}</div>
+        <core-icon-button class="action-button" icon="launch" on-click="{{viewSourceAction}}"></core-icon-button>
+        
       </core-toolbar>
       
-      <core-selector id="card" selected="{{selected}}" valueattr="label" selectedItem="{{sample}}" on-transitionend="{{cardTransitionDone}}">
+      <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
 
-        <content id="samples" select="*"></content>
+        <div id="frameContainer">
+          <iframe id="frame" src="{{item.url}}" on-load="{{frameLoaded}}"></iframe>
+        </div>
         
-      </core-selector>
+      </div>
       
     </core-header-panel>
 
@@ -73,58 +71,23 @@ sampler-scaffold
     
     responsiveWidth: '860px',
     
-    hideAction: false,
-    
     attached: function() {
-      this.updateMenu();
       this.async(function() {
         this.$.menu.selected = 0;
       }, null, 300);
-    },
-    
-    updateMenu: function() {
-      this.items = [];
-      this.$.card.items.forEach(function(s) {
-        var newItem = {
-          name: s.getAttribute('label'),
-          tag: s.getAttribute('tag')
-        };
-        var foundItem;
-        for (var i = 0, item; item = this.items[i]; i++) {
-          if (item.tag === newItem.tag) {
-            foundItem = item;
-            break;
-          }
-        }
-        if (foundItem && foundItem.tag) {
-          var l = foundItem.items
-          if (!l) {
-            l = foundItem.items = [];
-            foundItem.label = foundItem.name.split('/').shift();
-            l.push({
-              name: foundItem.name,
-              label: foundItem.name.split('/').pop(),
-              tag: foundItem.tag
-            });
-          }
-          newItem.label = newItem.name.split('/').pop();
-          l.push(newItem);
-        } else {
-          this.items.push(newItem);
-        }
-      }.bind(this));
+      window.addEventListener('resize', this.updateFrameHeight.bind(this));
     },
     
     menuSelect: function(e, detail) {
       if (detail.isSelected) {
-        this.item = detail.item.templateInstance.model;
-        this.selected = this.item.name;
-      }
-    },
-    
-    selectedChanged: function() {
-      if (!this.narrow) {
-        this.animateCard();
+        this.item = detail.item;
+        this.item.tag = this.item.getAttribute('tag');
+        this.item.url = detail.item.getAttribute('url');
+        if (this.narrow) {
+          this.$.drawerPanel.closeDrawer();
+        } else {
+          this.animateCard();
+        }
       }
     },
     
@@ -150,9 +113,7 @@ sampler-scaffold
     cardTransitionDone: function() {
       if (this.$.card.classList.contains('move-up')) {
         this.$.card.classList.remove('move-up');
-        if (this.sample && this.sample.updateFrameHeight) {
-          this.sample.updateFrameHeight();
-        }
+        this.updateFrameHeight();
       }
     },
     
@@ -160,11 +121,29 @@ sampler-scaffold
       this.$.drawerPanel.togglePanel();
     },
     
-    viewSourceAction: function() {
-      var frame = this.sample && this.sample.frame;
-      if (frame) {
-        window.open('view-source:' + frame.src, this.sample.tag);
+    frameLoaded: function() {
+      if (!this.item) {
+        return;
       }
+      this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
+        setTimeout(this.updateFrameHeight.bind(this), 100);
+      }.bind(this));
+    },
+    
+    updateFrameHeight: function() {
+      var f = this.$.frame;
+      if (f && f.contentDocument && f.contentDocument.body) {
+        var body = f.contentDocument.body;
+        f.style.height = 'auto';
+        f.style.height = body.scrollHeight + 'px';
+        // to avoid the 'blinking bug'
+        // https://code.google.com/p/chromium/issues/detail?id=332024
+        body.style.webkitTransform = body.style.transform = 'translateZ(0)';
+      }
+    },
+    
+    viewSourceAction: function() {
+      window.open('view-source:' + this.$.frame.src, this.item.tag);
     }
     
   });

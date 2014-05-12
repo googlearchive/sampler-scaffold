@@ -43,7 +43,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 #card {
   display: block;
   margin: 128px 100px 60px;
+  background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
+  overflow: hidden;
+}
+
+#card[hidden] {
+  display: none;
 }
 
 #card.move-up {
@@ -51,18 +57,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   transition: transform 0.38s ease-out;
 }
 
-/* card's content which contains all the demos */
-/*@polyfill #card > * */
-#card > ::content > * {
+.action-button {
+  z-index: 1;
+}
+
+#drawerPanel:not([narrow]) #menuButton {
   display: none;
-  background-color: #fff;
 }
 
-/*@polyfill #card > .core-selected */
-#card > ::content > .core-selected {
+.toolbar-label {
+  letter-spacing: 0.05em;
+}
+
+#frame {
   display: block;
+  width: 100%;
+  min-height: 500px;
+  border: none;
 }
 
+/* narrow layout */
 #drawerPanel[narrow] [main] {
   background-color: #fff;
 }
@@ -70,20 +84,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 #drawerPanel[narrow] #card {
   margin: 0;
   box-shadow: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
-#drawerPanel:not([narrow]) #menuButton {
-  display: none;
+#drawerPanel[narrow] #frame {
+  min-height: 100%;
 }
 
-.action-button {
-  z-index: 1;
+#drawerPanel[narrow] #frameContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
 }
 
-.action-button[hidden] {
-  display: none;
-}
-
-.toolbar-label {
-  letter-spacing: 0.05em;
-}
