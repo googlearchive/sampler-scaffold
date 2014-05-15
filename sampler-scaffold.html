@@ -46,7 +46,7 @@ sampler-scaffold
       <core-toolbar class="{{ {tall : !narrow} | tokenList }}">
       
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
-        <div core-flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.label}}</div>
+        <div flex class="toolbar-label">{{item.tag ? '&lt;' + item.tag + '&gt;' : item.label}}</div>
         <core-icon-button class="action-button" icon="launch" on-click="{{viewSourceAction}}"></core-icon-button>
         
       </core-toolbar>
@@ -70,7 +70,7 @@ sampler-scaffold
     
     responsiveWidth: '860px',
     
-    attached: function() {
+    domReady: function() {
       this.async(function() {
         this.$.menu.selected = 0;
       }, null, 300);
