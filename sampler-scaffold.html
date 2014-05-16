@@ -130,14 +130,18 @@ sampler-scaffold
     },
     
     updateFrameHeight: function() {
-      var f = this.$.frame;
-      if (f && f.contentDocument && f.contentDocument.body) {
-        var body = f.contentDocument.body;
-        f.style.height = 'auto';
-        f.style.height = body.scrollHeight + 'px';
+      var frame = this.$.frame;
+      var doc = frame.contentDocument;
+      if (doc) {
+        var docElt = doc.documentElement;
+        frame.style.height = 'auto';
+        frame.style.height = docElt.scrollHeight + 'px';
         // to avoid the 'blinking bug'
         // https://code.google.com/p/chromium/issues/detail?id=332024
-        body.style.webkitTransform = body.style.transform = 'translateZ(0)';
+        if (doc.body) {
+          var s = doc.body.style;
+          s.webkitTransform = s.transform = 'translateZ(0)';
+        }
       }
     },
     
