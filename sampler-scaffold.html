@@ -54,7 +54,7 @@ sampler-scaffold
       <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
 
         <div id="frameContainer">
-          <iframe id="frame" src="{{item.url}}" on-load="{{frameLoaded}}"></iframe>
+          <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
         </div>
         
       </div>
@@ -70,18 +70,35 @@ sampler-scaffold
     
     responsiveWidth: '860px',
     
+    ready: function() {
+      window.addEventListener('resize', this.updateFrameHeight.bind(this));
+      window.addEventListener('hashchange', this.parseLocationHash.bind(this));
+    },
+    
     domReady: function() {
       this.async(function() {
-        this.$.menu.selected = 0;
+        this.parseLocationHash();
       }, null, 300);
-      window.addEventListener('resize', this.updateFrameHeight.bind(this));
+    },
+    
+    parseLocationHash: function() {
+      var route = window.location.hash.slice(1);
+      for (var i = 0, item; item = this.$.menu.items[i]; i++) {
+        if (item.getAttribute('tag') === route) {
+          this.$.menu.selected = i;
+          return;
+        }
+      }
+      this.$.menu.selected = this.$.menu.selected || 0;
     },
     
     menuSelect: function(e, detail) {
       if (detail.isSelected) {
         this.item = detail.item;
         this.item.tag = this.item.getAttribute('tag');
-        this.item.url = detail.item.getAttribute('url');
+        var url = this.item.getAttribute('url');
+        this.$.frame.contentWindow.location.replace(url);
+        window.location.hash = this.item.tag;
         if (this.narrow) {
           this.$.drawerPanel.closeDrawer();
         } else {
@@ -146,7 +163,8 @@ sampler-scaffold
     },
     
     viewSourceAction: function() {
-      window.open('view-source:' + this.$.frame.src, this.item.tag);
+      window.open('view-source:' + this.$.frame.contentWindow.location.href, 
+          this.item.tag);
     }
     
   });
