@@ -29,7 +29,7 @@ sampler-scaffold
 
   <core-drawer-panel id="drawerPanel" narrow="{{narrow}}" responsiveWidth="{{responsiveWidth}}">
 
-    <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall' : 'cover'}}">
+    <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall' : 'cover'}}" shadow>
 
       <core-toolbar class="{{ {'medium-tall' : !narrow} | tokenList }}">
         <content select=".menuButton" on-tap="{{togglePanel}}">
@@ -53,7 +53,7 @@ sampler-scaffold
       
     </core-header-panel>
 
-    <core-header-panel drawer mode="seamed">
+    <core-header-panel drawer>
 
       <core-toolbar class="{{ {'medium-tall' : !narrow} | tokenList }}">
         <div class="bottom main-label fit">{{label}}</div>
