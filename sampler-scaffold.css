@@ -23,7 +23,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 core-toolbar {
   background-color: #5264ae;
   color: #fff;
-  fill: #fff;
   font-size: 20px;
   font-weight: 400;
 }
@@ -98,7 +97,7 @@ polyfill-next-selector { content: '.sourceButton';}
 polyfill-next-selector { content: '.sourceButton:not(.fallback)';}
 ::content .sourceButton:not(.fallback) {
   background-color: #fcfcfc;
-  fill: #666464;
+  color: #666464;
   bottom: -28px;
   right: 24px;
 }
